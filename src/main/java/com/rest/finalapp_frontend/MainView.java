@@ -1,8 +1,6 @@
 package com.rest.finalapp_frontend;
 
-import com.rest.finalapp_frontend.LoginPage;
 import com.rest.finalapp_frontend.domain.UserDto;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -17,7 +15,8 @@ public class MainView extends VerticalLayout {
     private Button addNewBook = new Button("Add new book");*/
 
     private LoginPage loginPage = new LoginPage(this);
-    private HomePage homePage = new HomePage();
+    private HomePage homePage = new HomePage(this);
+    private UserDto user;
 
     public MainView() {
         /*filter.setPlaceholder("Filter by title");
@@ -56,8 +55,18 @@ public class MainView extends VerticalLayout {
     }*/
 
     public void executeLogin(UserDto user){
+        this.user = user;
         remove(loginPage);
         add(homePage);
-        homePage.getPlayerForm().loadPlayer(user);
+        if(user.getPlayerId() != null) {
+            homePage.getPlayerForm().loadPlayer(user.getPlayerId());
+        }
+        if(user.getTeamId() != null) {
+            homePage.getTeamManageForm().loadTeam(user.getTeamId());
+        }
+    }
+
+    public UserDto getUser() {
+        return user;
     }
 }

@@ -12,9 +12,7 @@ import com.vaadin.flow.component.textfield.TextField;
 public class LoginPage extends VerticalLayout {
 
     private MainView mainView;
-
     private BackendService backendService = BackendService.getInstance();
-
     private TextField userName = new TextField("Username");
     private Button login = new Button("Log in");
     private Button signUp = new Button("Sign up");

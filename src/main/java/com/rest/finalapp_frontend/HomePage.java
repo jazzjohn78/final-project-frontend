@@ -5,14 +5,24 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class HomePage extends VerticalLayout {
 
-    public PlayerForm playerForm = new PlayerForm();
+    private MainView mainView;
+    private PlayerForm playerForm;
+    private TeamManageForm teamManageForm;
 
 
-    public HomePage() {
-        add(playerForm);
+    public HomePage(MainView mainView) {
+        this.mainView = mainView;
+        this.playerForm = new PlayerForm(mainView);
+        this.teamManageForm = new TeamManageForm(mainView);
+
+        add(playerForm, teamManageForm);
     }
 
     public PlayerForm getPlayerForm() {
         return playerForm;
+    }
+
+    public TeamManageForm getTeamManageForm() {
+        return teamManageForm;
     }
 }

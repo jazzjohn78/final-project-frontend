@@ -1,7 +1,6 @@
 package com.rest.finalapp_frontend;
 
 import com.rest.finalapp_frontend.domain.PlayerDto;
-import com.rest.finalapp_frontend.domain.UserDto;
 import com.rest.finalapp_frontend.service.BackendService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -13,7 +12,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class PlayerForm extends FormLayout {
-    private UserDto userDto;
+
+    private MainView mainView;
     private PlayerDto playerDto;
     private BackendService backendService = BackendService.getInstance();
 
@@ -25,7 +25,9 @@ public class PlayerForm extends FormLayout {
     private Button save = new Button("Save");
     private Button delete = new Button("Delete");
 
-    public PlayerForm() {
+    public PlayerForm(MainView mainView) {
+        this.mainView = mainView;
+
         this.setResponsiveSteps(new FormLayout.ResponsiveStep("25em", 1));
         Span title = new Span("PLAYER INFO");
         title.getElement().getStyle().set("font-size", "20px");
@@ -45,14 +47,11 @@ public class PlayerForm extends FormLayout {
         delete.addClickListener(event -> deletePlayer());
     }
 
-    public void loadPlayer(UserDto userDto) {
-        this.userDto = userDto;
-        if(this.userDto.getPlayerId() != null) {
-            this.playerDto = backendService.getPlayer(userDto.getPlayerId());
-            playerName.setValue(this.playerDto.getName());
-            playerRank.setValue(this.playerDto.getRank());
-            playerRole.setValue(this.playerDto.getRole());
-        }
+    public void loadPlayer(Long playerId) {
+        this.playerDto = backendService.getPlayer(playerId);
+        playerName.setValue(this.playerDto.getName());
+        playerRank.setValue(this.playerDto.getRank());
+        playerRole.setValue(this.playerDto.getRole());
     }
 
     private void editPlayer() {
@@ -70,15 +69,15 @@ public class PlayerForm extends FormLayout {
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
 
-        if(this.userDto.getPlayerId() == null) {
-            PlayerDto createdPlayerDto = backendService.createPlayer(new PlayerDto(
+        if(this.playerDto == null) {
+            this.playerDto = backendService.createPlayer(new PlayerDto(
                     null,
                     playerName.getValue(),
                     playerRank.getValue(),
                     playerRole.getValue()
             ));
-            this.userDto.setPlayerId(createdPlayerDto.getId());
-            backendService.updateUser(this.userDto);
+            this.mainView.getUser().setPlayerId(this.playerDto.getId());
+            backendService.updateUser(this.mainView.getUser());
             Notification.show("Player info added", 3000, Notification.Position.TOP_CENTER);
         } else {
             this.playerDto.setName(playerName.getValue());
@@ -99,8 +98,8 @@ public class PlayerForm extends FormLayout {
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
 
-        this.userDto.setPlayerId(null);
-        backendService.updateUser(this.userDto);
+        this.mainView.getUser().setPlayerId(null);
+        backendService.updateUser(this.mainView.getUser());
         backendService.deletePlayer(this.playerDto.getId());
         this.playerDto = null;
         Notification.show("Player info deleted", 3000, Notification.Position.TOP_CENTER);

@@ -2,6 +2,7 @@ package com.rest.finalapp_frontend.service;
 
 
 import com.rest.finalapp_frontend.domain.PlayerDto;
+import com.rest.finalapp_frontend.domain.TeamDto;
 import com.rest.finalapp_frontend.domain.UserDto;
 import com.vaadin.flow.component.notification.Notification;
 import org.springframework.stereotype.Component;
@@ -29,15 +30,6 @@ public class BackendService {
         }
         return backendService;
     }
-
-    /*public boolean authenticateUser(String username) {
-        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "users/" + username)
-                .build().encode().toUri();
-        UserDto userResponse = restTemplate.getForObject(url, UserDto.class);
-
-        System.out.println(userResponse.getName());
-        return true;
-    }*/
 
     public UserDto getUser(String username) {
         URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "users/" + username)
@@ -116,6 +108,54 @@ public class BackendService {
 
     public void deletePlayer(Long playerId) {
         URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "players/" + playerId)
+                .build().encode().toUri();
+
+        try {
+            restTemplate.delete(url);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public TeamDto getTeam(Long teamId) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams/" + teamId)
+                .build().encode().toUri();
+
+        try {
+            TeamDto teamResponse = restTemplate.getForObject(url, TeamDto.class);
+            return teamResponse;
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return null;
+        }
+    }
+
+    public TeamDto createTeam(TeamDto teamDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams")
+                .build().encode().toUri();
+
+        try {
+            TeamDto createdTeam = restTemplate.postForObject(url, teamDto, TeamDto.class);
+            return createdTeam;
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return null;
+        }
+    }
+
+    public void updateTeam(TeamDto teamDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.put(url, teamDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public void deleteTeam(Long teamid) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams/" + teamid)
                 .build().encode().toUri();
 
         try {
