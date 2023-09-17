@@ -41,6 +41,7 @@ public class BackendService {
             return userResponse;
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            createLoginLog(new LoginLogDto(null, username, e.getMessage()));
             return null;
         }
     }
@@ -220,6 +221,39 @@ public class BackendService {
 
         try {
             restTemplate.postForLocation(url, playerRankDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public void createLoginLog(LoginLogDto loginLogDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "logs/login")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, loginLogDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public void createTeamLog(TeamLogDto teamLogDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "logs/team")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, teamLogDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public void createPlayerLog(PlayerLogDto playerLogDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "logs/player")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, playerLogDto);
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }

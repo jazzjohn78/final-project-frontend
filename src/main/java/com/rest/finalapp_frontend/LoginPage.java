@@ -1,5 +1,6 @@
 package com.rest.finalapp_frontend;
 
+import com.rest.finalapp_frontend.domain.LoginLogDto;
 import com.rest.finalapp_frontend.domain.UserDto;
 import com.rest.finalapp_frontend.service.BackendService;
 import com.vaadin.flow.component.button.Button;
@@ -36,6 +37,7 @@ public class LoginPage extends VerticalLayout {
         }
         UserDto user = backendService.getUser(username);
         if (user != null) {
+            backendService.createLoginLog(new LoginLogDto(null, user.getName(), "Login successful"));
             Notification.show("Logged in as: " + user.getName(), 3000, Notification.Position.TOP_CENTER);
             mainView.executeLogin(user);
         }
