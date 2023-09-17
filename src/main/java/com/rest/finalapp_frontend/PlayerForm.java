@@ -1,10 +1,13 @@
 package com.rest.finalapp_frontend;
 
 import com.rest.finalapp_frontend.domain.PlayerDto;
+import com.rest.finalapp_frontend.domain.TeamDto;
 import com.rest.finalapp_frontend.service.BackendService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -19,11 +22,20 @@ public class PlayerForm extends FormLayout {
 
     private TextField playerName = new TextField("Player Name");
     private TextField playerRank = new TextField("Player Rank");
-    private TextField playerRole = new TextField("Player Role");
+//    private TextField playerRole = new TextField("Player Role");
+    private ComboBox<String> playerRole = new ComboBox<>("Player Role");
     private TextField playerTeam = new TextField("Player Team");
     private Button edit = new Button("Edit");
     private Button save = new Button("Save");
     private Button delete = new Button("Delete");
+    private Button joinMyTeam = new Button("Join My Team");
+    private Button findTeam = new Button("Find a Team");
+    private Button leaveTeam = new Button("Leave this Team");
+    private Span teamListHeader = new Span("Select a team to join it");
+    private Grid<TeamDto> teams = new Grid<>(TeamDto.class);
+    HorizontalLayout buttons = new HorizontalLayout(edit, save, delete);
+    HorizontalLayout teamButtons = new HorizontalLayout(joinMyTeam, findTeam, leaveTeam);
+    VerticalLayout teamList = new VerticalLayout(teamListHeader, teams);
 
     public PlayerForm(MainView mainView) {
         this.mainView = mainView;
@@ -35,23 +47,34 @@ public class PlayerForm extends FormLayout {
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
         playerTeam.setReadOnly(true);
+        playerRole.setItems(backendService.getPlayerRoles().stream()
+                .map(playerRoleDto -> playerRoleDto.getName()));
         edit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.setVisible(false);
-        VerticalLayout fields = new VerticalLayout(playerName, playerRole, playerRank, playerTeam);
-        HorizontalLayout buttons = new HorizontalLayout(edit, save, delete);
-        add(title, playerName, playerRank, playerRole, playerTeam, buttons);
+        joinMyTeam.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        findTeam.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        teamListHeader.getElement().getStyle().set("font-size", "14px");
+        teams.setColumns("name", "description");
+        teamList.setVisible(false);
+        add(title, playerName, playerRank, playerRole, playerTeam, buttons, teamButtons, teamList);
+        refresh();
 
         edit.addClickListener(event -> editPlayer());
         save.addClickListener(event -> savePlayer());
         delete.addClickListener(event -> deletePlayer());
+        joinMyTeam.addClickListener(event -> addToMyTeam());
+        findTeam.addClickListener(event -> showTeams());
+        leaveTeam.addClickListener(event -> leaveThisTeam());
+        teams.asSingleSelect().addValueChangeListener(event -> addToTeam(teams.asSingleSelect().getValue()));
     }
 
     public void loadPlayer(Long playerId) {
-        this.playerDto = backendService.getPlayer(playerId);
-        playerName.setValue(this.playerDto.getName());
-        playerRank.setValue(this.playerDto.getRank());
-        playerRole.setValue(this.playerDto.getRole());
+        playerDto = backendService.getPlayer(playerId);
+        playerName.setValue(playerDto.getName());
+        playerRank.setValue(playerDto.getRank());
+        playerRole.setValue(playerDto.getRole());
+        refresh();
     }
 
     private void editPlayer() {
@@ -63,29 +86,36 @@ public class PlayerForm extends FormLayout {
     }
 
     private void savePlayer() {
+        if (playerName.getValue() == "") {
+            Notification.show("Player name cannot be empty", 3000, Notification.Position.TOP_CENTER);
+            return;
+        }
+
         edit.setVisible(true);
         save.setVisible(false);
         playerName.setReadOnly(true);
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
 
-        if(this.playerDto == null) {
-            this.playerDto = backendService.createPlayer(new PlayerDto(
+        if(playerDto == null) {
+            playerDto = backendService.createPlayer(new PlayerDto(
                     null,
                     playerName.getValue(),
                     playerRank.getValue(),
-                    playerRole.getValue()
+                    playerRole.getValue(),
+                    null
             ));
-            this.mainView.getUser().setPlayerId(this.playerDto.getId());
-            backendService.updateUser(this.mainView.getUser());
+            mainView.getUser().setPlayerId(playerDto.getId());
+            backendService.updateUser(mainView.getUser());
             Notification.show("Player info added", 3000, Notification.Position.TOP_CENTER);
         } else {
-            this.playerDto.setName(playerName.getValue());
-            this.playerDto.setRank(playerRank.getValue());
-            this.playerDto.setRole(playerRole.getValue());
-            backendService.updatePlayer(this.playerDto);
+            playerDto.setName(playerName.getValue());
+            playerDto.setRank(playerRank.getValue());
+            playerDto.setRole(playerRole.getValue());
+            backendService.updatePlayer(playerDto);
             Notification.show("Player info updated", 3000, Notification.Position.TOP_CENTER);
         }
+        refresh();
     }
 
     private void deletePlayer() {
@@ -98,10 +128,72 @@ public class PlayerForm extends FormLayout {
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
 
-        this.mainView.getUser().setPlayerId(null);
-        backendService.updateUser(this.mainView.getUser());
-        backendService.deletePlayer(this.playerDto.getId());
-        this.playerDto = null;
+        mainView.getUser().setPlayerId(null);
+        backendService.updateUser(mainView.getUser());
+        backendService.deletePlayer(playerDto.getId());
+        playerDto = null;
         Notification.show("Player info deleted", 3000, Notification.Position.TOP_CENTER);
+        refresh();
+    }
+
+    private void addToMyTeam() {
+        playerDto.setTeamId(mainView.getUser().getTeamId());
+        mainView.getHomePage().getTeamManageForm().getTeamDto().getPlayersIds().add(playerDto.getId());
+        backendService.updateTeam(mainView.getHomePage().getTeamManageForm().getTeamDto());
+        Notification.show("Your player has been added to your team", 3000, Notification.Position.TOP_CENTER);
+        refresh();
+        mainView.getHomePage().getTeamManageForm().refresh();
+    }
+
+    private void addToTeam(TeamDto team) {
+        playerDto.setTeamId(team.getId());
+        team.getPlayersIds().add(playerDto.getId());
+        backendService.updateTeam(team);
+        teamList.setVisible(false);
+        Notification.show("Your player has been added to selected team", 3000, Notification.Position.TOP_CENTER);
+        refresh();
+        if (mainView.getUser().getTeamId() != null) {
+            mainView.getHomePage().getTeamManageForm().loadTeam(mainView.getUser().getTeamId());
+        }
+    }
+
+    public void showTeams() {
+        teamList.setVisible(true);
+        teams.setItems(backendService.getTeams());
+    }
+
+    private void leaveThisTeam() {
+        playerDto.setTeamId(null);
+        backendService.updatePlayer(playerDto);
+        Notification.show("Your player has left the team", 3000, Notification.Position.TOP_CENTER);
+        refresh();
+        if (mainView.getUser().getTeamId() != null) {
+            mainView.getHomePage().getTeamManageForm().loadTeam(mainView.getUser().getTeamId());
+        }
+    }
+
+    public void refresh() {
+        if (playerDto == null) {
+            delete.setVisible(false);
+            teamButtons.setVisible(false);
+        } else {
+            delete.setVisible(true);
+            teamButtons.setVisible(true);
+            if (playerDto.getTeamId() == null) {
+                playerTeam.setValue("");
+                if (mainView.getUser().getTeamId() == null) {
+                    joinMyTeam.setVisible(false);
+                } else {
+                    joinMyTeam.setVisible(true);
+                }
+                findTeam.setVisible(true);
+                leaveTeam.setVisible(false);
+            } else {
+                playerTeam.setValue(backendService.getTeam(playerDto.getTeamId()).getName());
+                joinMyTeam.setVisible(false);
+                findTeam.setVisible(false);
+                leaveTeam.setVisible(true);
+            }
+        }
     }
 }

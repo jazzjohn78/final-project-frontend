@@ -1,6 +1,8 @@
 package com.rest.finalapp_frontend;
 
+import com.rest.finalapp_frontend.domain.PlayerRoleDto;
 import com.rest.finalapp_frontend.domain.UserDto;
+import com.rest.finalapp_frontend.service.BackendService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -17,6 +19,7 @@ public class MainView extends VerticalLayout {
     private LoginPage loginPage = new LoginPage(this);
     private HomePage homePage = new HomePage(this);
     private UserDto user;
+    private BackendService backendService = BackendService.getInstance();
 
     public MainView() {
         /*filter.setPlaceholder("Filter by title");
@@ -43,6 +46,7 @@ public class MainView extends VerticalLayout {
         grid.asSingleSelect().addValueChangeListener(event -> form.setBook(grid.asSingleSelect().getValue()));*/
 
         add(loginPage);
+        initRoles();
         //add(homePage);
     }
 
@@ -68,5 +72,20 @@ public class MainView extends VerticalLayout {
 
     public UserDto getUser() {
         return user;
+    }
+
+    public HomePage getHomePage() {
+        return homePage;
+    }
+
+    //administrator dedicated task
+    private void initRoles() {
+        if (backendService.getPlayerRoles().size() == 0) {
+            backendService.createPlayerRole(new PlayerRoleDto(null, "In Game Leader"));
+            backendService.createPlayerRole(new PlayerRoleDto(null, "Entry Fragger"));
+            backendService.createPlayerRole(new PlayerRoleDto(null, "Rifler"));
+            backendService.createPlayerRole(new PlayerRoleDto(null, "Sniper"));
+            backendService.createPlayerRole(new PlayerRoleDto(null, "Lurker"));
+        }
     }
 }

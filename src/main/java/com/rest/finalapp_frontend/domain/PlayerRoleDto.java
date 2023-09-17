@@ -6,23 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TeamDto {
+public class PlayerRoleDto {
 
     @JsonProperty("id")
     private Long id;
 
     @JsonProperty("name")
     private String name;
-
-    @JsonProperty("description")
-    private String description;
-
-    @JsonProperty("playersIds")
-    private List<Long> playersIds;
 }

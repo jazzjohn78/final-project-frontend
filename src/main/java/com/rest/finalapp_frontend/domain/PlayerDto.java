@@ -23,4 +23,7 @@ public class PlayerDto {
 
     @JsonProperty("role")
     private String role;
+
+    @JsonProperty("teamId")
+    private Long teamId;
 }

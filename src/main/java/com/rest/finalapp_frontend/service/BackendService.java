@@ -1,9 +1,7 @@
 package com.rest.finalapp_frontend.service;
 
 
-import com.rest.finalapp_frontend.domain.PlayerDto;
-import com.rest.finalapp_frontend.domain.TeamDto;
-import com.rest.finalapp_frontend.domain.UserDto;
+import com.rest.finalapp_frontend.domain.*;
 import com.vaadin.flow.component.notification.Notification;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -11,6 +9,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class BackendService {
@@ -117,6 +118,18 @@ public class BackendService {
         }
     }
 
+    public List<TeamDto> getTeams() {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams")
+                .build().encode().toUri();
+        try {
+            TeamDto[] teamListResponse = restTemplate.getForObject(url, TeamDto[].class);
+            return Arrays.asList(teamListResponse);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return new ArrayList<>();
+        }
+    }
+
     public TeamDto getTeam(Long teamId) {
         URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "teams/" + teamId)
                 .build().encode().toUri();
@@ -160,6 +173,29 @@ public class BackendService {
 
         try {
             restTemplate.delete(url);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public List<PlayerRoleDto> getPlayerRoles() {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "playerRoles")
+                .build().encode().toUri();
+        try {
+            PlayerRoleDto[] playerRoleListResponse = restTemplate.getForObject(url, PlayerRoleDto[].class);
+            return Arrays.asList(playerRoleListResponse);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return new ArrayList<>();
+        }
+    }
+
+    public void createPlayerRole(PlayerRoleDto playerRoleDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "playerRoles")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, playerRoleDto);
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }
