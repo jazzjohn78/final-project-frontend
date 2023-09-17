@@ -200,4 +200,28 @@ public class BackendService {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }
     }
+
+    public List<PlayerRankDto> getPlayerRanks() {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "playerRanks")
+                .build().encode().toUri();
+
+        try {
+            PlayerRankDto[] playerRankListResponse = restTemplate.getForObject(url, PlayerRankDto[].class);
+            return Arrays.asList(playerRankListResponse);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return new ArrayList<>();
+        }
+    }
+
+    public void createPlayerRank(PlayerRankDto playerRankDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "playerRanks")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, playerRankDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
 }

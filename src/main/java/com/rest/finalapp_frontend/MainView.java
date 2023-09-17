@@ -1,5 +1,6 @@
 package com.rest.finalapp_frontend;
 
+import com.rest.finalapp_frontend.domain.PlayerRankDto;
 import com.rest.finalapp_frontend.domain.PlayerRoleDto;
 import com.rest.finalapp_frontend.domain.UserDto;
 import com.rest.finalapp_frontend.service.BackendService;
@@ -10,53 +11,16 @@ import com.vaadin.flow.router.Route;
 @Route
 public class MainView extends VerticalLayout {
 
-    /*private BookService bookService = BookService.getInstance();
-    private Grid<Book> grid = x`>(Book.class);
-    private TextField filter = new TextField();
-    private BookForm form = new BookForm(this);
-    private Button addNewBook = new Button("Add new book");*/
-
     private LoginPage loginPage = new LoginPage(this);
     private HomePage homePage = new HomePage(this);
     private UserDto user;
     private BackendService backendService = BackendService.getInstance();
 
     public MainView() {
-        /*filter.setPlaceholder("Filter by title");
-        filter.setClearButtonVisible(true);
-        filter.setValueChangeMode(ValueChangeMode.EAGER);
-        filter.addValueChangeListener(e -> update());
-        grid.setColumns("title", "author", "publicationYear", "type");
-
-        addNewBook.addClickListener(e -> {
-            grid.asSingleSelect().clear();
-            form.setBook(new Book());
-        });
-        HorizontalLayout toolbar = new HorizontalLayout(filter, addNewBook);
-
-        HorizontalLayout mainContent = new HorizontalLayout(grid, form);
-        mainContent.setSizeFull();
-        grid.setSizeFull();
-
-        add(toolbar, mainContent);
-        form.setBook(null);
-        setSizeFull();
-        refresh();
-
-        grid.asSingleSelect().addValueChangeListener(event -> form.setBook(grid.asSingleSelect().getValue()));*/
-
         add(loginPage);
         initRoles();
-        //add(homePage);
+        initRanks();
     }
-
-    /*public void refresh() {
-        grid.setItems(bookService.getBooks());
-    }
-
-    public void update() {
-        grid.setItems((bookService.findByTitle(filter.getValue())));
-    }*/
 
     public void executeLogin(UserDto user){
         this.user = user;
@@ -78,7 +42,7 @@ public class MainView extends VerticalLayout {
         return homePage;
     }
 
-    //administrator dedicated task
+    //administrator dedicated tasks
     private void initRoles() {
         if (backendService.getPlayerRoles().size() == 0) {
             backendService.createPlayerRole(new PlayerRoleDto(null, "In Game Leader"));
@@ -86,6 +50,29 @@ public class MainView extends VerticalLayout {
             backendService.createPlayerRole(new PlayerRoleDto(null, "Rifler"));
             backendService.createPlayerRole(new PlayerRoleDto(null, "Sniper"));
             backendService.createPlayerRole(new PlayerRoleDto(null, "Lurker"));
+        }
+    }
+
+    private void initRanks() {
+        if(backendService.getPlayerRanks().size() == 0) {
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver I"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver II"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver III"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver IV"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver Elite"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Silver Elite Master"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Gold Nova I"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Gold Nova II"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Gold Nova III"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Gold Nova Master"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Master Guardian I"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Master Guardian II"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Master Guardian Elite"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Distinguished Master Guardian"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Legendary Eagle"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Legendary Eagle Master"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Supreme Master First Class"));
+            backendService.createPlayerRank(new PlayerRankDto(null, "Global Elite"));
         }
     }
 }

@@ -21,8 +21,7 @@ public class PlayerForm extends FormLayout {
     private BackendService backendService = BackendService.getInstance();
 
     private TextField playerName = new TextField("Player Name");
-    private TextField playerRank = new TextField("Player Rank");
-//    private TextField playerRole = new TextField("Player Role");
+    private ComboBox<String> playerRank = new ComboBox<>("Player Rank");
     private ComboBox<String> playerRole = new ComboBox<>("Player Role");
     private TextField playerTeam = new TextField("Player Team");
     private Button edit = new Button("Edit");
@@ -47,6 +46,8 @@ public class PlayerForm extends FormLayout {
         playerRank.setReadOnly(true);
         playerRole.setReadOnly(true);
         playerTeam.setReadOnly(true);
+        playerRank.setItems(backendService.getPlayerRanks().stream()
+                .map(playerRankDto -> playerRankDto.getName()));
         playerRole.setItems(backendService.getPlayerRoles().stream()
                 .map(playerRoleDto -> playerRoleDto.getName()));
         edit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
