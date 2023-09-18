@@ -258,4 +258,17 @@ public class BackendService {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }
     }
+
+    public SkinDto getRandomSkin() {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "skin/random")
+                .build().encode().toUri();
+
+        try {
+            SkinDto skinResponse = restTemplate.getForObject(url, SkinDto.class);
+            return skinResponse;
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            return null;
+        }
+    }
 }
