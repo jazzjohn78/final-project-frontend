@@ -42,7 +42,7 @@ public class BackendService {
             return userResponse;
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
-            createLoginErrorLog(new LoginErrorLogDto(
+            createLoginLog(new LoginLogDto(
                     null,
                     new Date(),
                     username,
@@ -238,17 +238,6 @@ public class BackendService {
 
         try {
             restTemplate.postForLocation(url, loginLogDto);
-        } catch (RestClientException e) {
-            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
-        }
-    }
-
-    public void createLoginErrorLog(LoginErrorLogDto loginErrorLogDto) {
-        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "logs/login_error")
-                .build().encode().toUri();
-
-        try {
-            restTemplate.postForLocation(url, loginErrorLogDto);
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }
