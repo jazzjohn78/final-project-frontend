@@ -11,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -41,7 +42,12 @@ public class BackendService {
             return userResponse;
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
-            createLoginLog(new LoginLogDto(null, username, e.getMessage()));
+            createLoginErrorLog(new LoginErrorLogDto(
+                    null,
+                    new Date(),
+                    username,
+                    e.getMessage()
+            ));
             return null;
         }
     }
@@ -232,6 +238,17 @@ public class BackendService {
 
         try {
             restTemplate.postForLocation(url, loginLogDto);
+        } catch (RestClientException e) {
+            Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    public void createLoginErrorLog(LoginErrorLogDto loginErrorLogDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(this.backendApi + "logs/login_error")
+                .build().encode().toUri();
+
+        try {
+            restTemplate.postForLocation(url, loginErrorLogDto);
         } catch (RestClientException e) {
             Notification.show(e.getMessage(), 3000, Notification.Position.TOP_CENTER);
         }

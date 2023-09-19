@@ -7,11 +7,10 @@ import java.util.Date;
 
 @Getter
 @AllArgsConstructor
-public class TeamLogDto {
+public class LoginErrorLogDto {
 
     private Long id;
     private Date date;
-    private Long teamId;
-    private String operation;
-    private String details;
+    private String username;
+    private String result;
 }

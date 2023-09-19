@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class TeamManageForm extends FormLayout {
@@ -89,13 +90,13 @@ public class TeamManageForm extends FormLayout {
             ));
             mainView.getUser().setTeamId(teamDto.getId());
             backendService.updateUser(mainView.getUser());
-            backendService.createTeamLog(new TeamLogDto(null, teamDto.getId(), "create", "Team created [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
+            backendService.createTeamLog(new TeamLogDto(null, new Date(), teamDto.getId(), "create", "Team created [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
             Notification.show("Team created", 3000, Notification.Position.TOP_CENTER);
         } else {
             teamDto.setName(teamName.getValue());
             teamDto.setDescription(teamDescription.getValue());
             backendService.updateTeam(teamDto);
-            backendService.createTeamLog(new TeamLogDto(null, teamDto.getId(), "update", "Team updated [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
+            backendService.createTeamLog(new TeamLogDto(null, new Date(), teamDto.getId(), "update", "Team updated [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
             Notification.show("Team info updated", 3000, Notification.Position.TOP_CENTER);
         }
         mainView.getHomePage().getPlayerForm().refresh();
@@ -112,7 +113,7 @@ public class TeamManageForm extends FormLayout {
         mainView.getUser().setTeamId(null);
         backendService.updateUser(mainView.getUser());
         backendService.deleteTeam(teamDto.getId());
-        backendService.createTeamLog(new TeamLogDto(null, teamDto.getId(), "delete", "Team deleted [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
+        backendService.createTeamLog(new TeamLogDto(null, new Date(), teamDto.getId(), "delete", "Team deleted [name: " + teamDto.getName() + ", description: " + teamDto.getDescription() + "]"));
         teamDto = null;
         Notification.show("Team deleted", 3000, Notification.Position.TOP_CENTER);
         mainView.getHomePage().getPlayerForm().refresh();

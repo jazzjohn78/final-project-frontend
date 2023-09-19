@@ -15,6 +15,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
+import java.util.Date;
+
 public class PlayerForm extends FormLayout {
 
     private MainView mainView;
@@ -109,14 +111,14 @@ public class PlayerForm extends FormLayout {
             ));
             mainView.getUser().setPlayerId(playerDto.getId());
             backendService.updateUser(mainView.getUser());
-            backendService.createPlayerLog(new PlayerLogDto(null, playerDto.getId(), "create", "Player created [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
+            backendService.createPlayerLog(new PlayerLogDto(null, new Date(), playerDto.getId(), "create", "Player created [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
             Notification.show("Player info added", 3000, Notification.Position.TOP_CENTER);
         } else {
             playerDto.setName(playerName.getValue());
             playerDto.setRank(playerRank.getValue());
             playerDto.setRole(playerRole.getValue());
             backendService.updatePlayer(playerDto);
-            backendService.createPlayerLog(new PlayerLogDto(null, playerDto.getId(), "update", "Player updated [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
+            backendService.createPlayerLog(new PlayerLogDto(null, new Date(), playerDto.getId(), "update", "Player updated [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
             Notification.show("Player info updated", 3000, Notification.Position.TOP_CENTER);
         }
         refresh();
@@ -135,7 +137,7 @@ public class PlayerForm extends FormLayout {
         mainView.getUser().setPlayerId(null);
         backendService.updateUser(mainView.getUser());
         backendService.deletePlayer(playerDto.getId());
-        backendService.createPlayerLog(new PlayerLogDto(null, playerDto.getId(), "delete", "Player deleted [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
+        backendService.createPlayerLog(new PlayerLogDto(null, new Date(), playerDto.getId(), "delete", "Player deleted [name: " + playerDto.getName() + ", rank: " + playerDto.getRank() + ", role: " + playerDto.getRole() + "]"));
         playerDto = null;
         Notification.show("Player info deleted", 3000, Notification.Position.TOP_CENTER);
         refresh();
